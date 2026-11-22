@@ -1,0 +1,21 @@
+{
+  "name": "Remote Subscription",
+  "moveUp": "Move up",
+  "moveDown": "Move down",
+  "description": "Configure a remote subscription, its icon, and custom parameters.",
+  "linkName": "Subscription name",
+  "url": "Subscription URL",
+  "icon": "Subscription icon",
+  "chooseIcon": "Choose an icon",
+  "loadingIcons": "Loading icons…",
+  "iconLoadFailed": "Could not load this icon set.",
+  "parameters": "Custom parameters",
+  "addParameter": "Add parameter",
+  "removeParameter": "Remove parameter",
+  "parameterKey": "Key",
+  "parameterValue": "Value",
+  "requiredName": "Enter a subscription name.",
+  "invalidUrl": "Enter a valid HTTP or HTTPS URL.",
+  "requiredKey": "Enter a parameter key.",
+  "duplicateKey": "Parameter keys must be unique."
+}

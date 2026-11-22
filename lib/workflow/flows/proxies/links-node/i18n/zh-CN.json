@@ -1,0 +1,21 @@
+{
+  "name": "远程订阅",
+  "moveUp": "上移",
+  "moveDown": "下移",
+  "description": "配置远程订阅地址、图标和自定义参数",
+  "linkName": "订阅名称",
+  "url": "订阅地址",
+  "icon": "订阅图标",
+  "chooseIcon": "选择图标",
+  "loadingIcons": "正在加载图标…",
+  "iconLoadFailed": "图标集加载失败",
+  "parameters": "自定义参数",
+  "addParameter": "添加参数",
+  "removeParameter": "移除参数",
+  "parameterKey": "键",
+  "parameterValue": "值",
+  "requiredName": "请输入订阅名称",
+  "invalidUrl": "请输入有效的 HTTP 或 HTTPS 地址",
+  "requiredKey": "请输入参数键",
+  "duplicateKey": "参数键不能重复"
+}

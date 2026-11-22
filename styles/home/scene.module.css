@@ -1,0 +1,21 @@
+.viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+:global(html):has(.viewport),
+:global(body):has(.viewport) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.scene {
+  --scene-max-width: 1440px;
+  --scene-unit: min(100svw, 155svh, var(--scene-max-width));
+}
+
+.modeLabel {
+  text-shadow: 0 2px 12px #131a2b;
+}
