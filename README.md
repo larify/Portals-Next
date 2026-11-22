@@ -31,7 +31,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-开发服务器默认地址为 <http://localhost:3000>。首次启动后可通过注册页面创建账户。
+开发服务器默认地址为 <http://localhost:3000>。创建账户前，按 [`.env.example`](.env.example) 配置启用注册，然后通过注册页面创建账户。
 
 ## 常用命令
 

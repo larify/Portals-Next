@@ -6,25 +6,32 @@ services:
     env_file:
       - .env
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
     volumes:
-      - '${PORTALS_DATA_DIR:-./data}:/app/data'
-    networks:
-      portals-next:
-        ipv4_address: ${PORTALS_IP_ADDR}
+      - portals-data:/app/data
+
+  migrate:
+    image: ghcr.io/larify/portals-next:migrate-latest
+    restart: 'no'
+    env_file:
+      - .env
+    volumes:
+      - portals-data:/app/data
 
   redis:
     image: redis:7-alpine
-    networks:
-      - portals-next
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
 
+volumes:
+  portals-data:
+
 networks:
-  portals-next:
-    external: true
-    name: ${PORTALS_BRIDGE_NETWORK}
+  default:
+    name: portals-next
