@@ -6,7 +6,7 @@ import { proxies } from '@/lib/db/schema';
 import type { Pagination } from '@/lib/types/pagination';
 import type { ProxyListParams } from '@/lib/types/routes';
 import type { TagOption } from '@/lib/types/tag';
-import { attachTags, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
+import { attachTags, filterByTag, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
 
 export type ProxyRow = typeof proxies.$inferSelect;
 export type ProxyValues = Omit<typeof proxies.$inferInsert, 'id' | 'createdAt' | 'updatedAt'> & { tagIds?: string[] };
@@ -16,6 +16,7 @@ export function pagination({
   size,
   search,
   status,
+  tagId,
 }: ProxyListParams): Pagination<ProxyRow & { tags: TagOption[] }> {
   const where = and(
     search
@@ -26,6 +27,7 @@ export function pagination({
         )
       : undefined,
     status && status !== 'all' ? eq(proxies.status, status === 'enabled') : undefined,
+    tagId ? filterByTag(proxies.id, ROUTE_TYPE.PROXY, tagId) : undefined,
   );
 
   return db.transaction((tx) => {

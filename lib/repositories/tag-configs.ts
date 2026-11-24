@@ -1,10 +1,21 @@
 import { and, asc, eq, inArray } from 'drizzle-orm';
+import type { SQLiteColumn } from 'drizzle-orm/sqlite-core';
 import 'server-only';
 import { db } from '@/lib/db';
 import { tagConfigs, tags } from '@/lib/db/schema';
 import type { TagOption } from '@/lib/types/tag';
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export function filterByTag(targetId: SQLiteColumn, type: string, tagId: string) {
+  return inArray(
+    targetId,
+    db
+      .select({ targetId: tagConfigs.targetId })
+      .from(tagConfigs)
+      .where(and(eq(tagConfigs.tagId, tagId), eq(tagConfigs.type, type))),
+  );
+}
 
 export function replaceTags(tx: Transaction, type: string, targetId: string, tagIds: readonly string[]) {
   tx.delete(tagConfigs)

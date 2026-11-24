@@ -6,7 +6,7 @@ import { redirects } from '@/lib/db/schema';
 import type { Pagination } from '@/lib/types/pagination';
 import type { RedirectListParams } from '@/lib/types/routes';
 import type { TagOption } from '@/lib/types/tag';
-import { attachTags, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
+import { attachTags, filterByTag, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
 
 export type RedirectRow = typeof redirects.$inferSelect;
 export type RedirectValues = Omit<typeof redirects.$inferInsert, 'id' | 'createdAt' | 'updatedAt'> & {
@@ -18,6 +18,7 @@ export function pagination({
   size,
   search,
   status,
+  tagId,
 }: RedirectListParams): Pagination<RedirectRow & { tags: TagOption[] }> {
   const where = and(
     search
@@ -28,6 +29,7 @@ export function pagination({
         )
       : undefined,
     status && status !== 'all' ? eq(redirects.status, status === 'enabled') : undefined,
+    tagId ? filterByTag(redirects.id, ROUTE_TYPE.REDIRECT, tagId) : undefined,
   );
 
   return db.transaction((tx) => {

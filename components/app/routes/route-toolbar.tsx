@@ -11,9 +11,11 @@ interface RouteToolbarProps {
   deleteAction?: ReactNode;
   search: string;
   status: 'all' | 'enabled' | 'disabled';
+  tagId?: string;
   loading: boolean;
   onSearch: (search: string) => void;
   onStatusChange: (status: 'all' | 'enabled' | 'disabled') => void;
+  onTagChange: (tagId?: string) => void;
   onRefresh: () => void;
   selectedCount: number;
   removing: boolean;
@@ -25,9 +27,11 @@ export function RouteToolbar({
   deleteAction,
   search,
   status,
+  tagId,
   loading,
   onSearch,
   onStatusChange,
+  onTagChange,
   onRefresh,
   selectedCount,
   removing,
@@ -40,9 +44,12 @@ export function RouteToolbar({
       searchPlaceholder={t(`admin.routes.${mode}.searchPlaceholder`)}
       search={search}
       status={status}
+      tagGroup={mode}
+      tagId={tagId}
       loading={loading}
       onSearch={onSearch}
       onStatusChange={onStatusChange}
+      onTagChange={onTagChange}
       onRefresh={onRefresh}
       refreshDisabled={loading || removing}
       actions={

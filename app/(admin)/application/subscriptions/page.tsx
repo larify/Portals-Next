@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { SubscriptionForm } from '@/components/app/application/subscription-form';
 import { SubscriptionDrawer } from '@/components/app/application/subscriptions/drawer';
-import type { SubscriptionDrawerProps } from '@/components/app/application/subscriptions/table';
-import { SubscriptionDelete, SubscriptionTable } from '@/components/app/application/subscriptions/table';
+import type { SubscriptionDrawerProps } from '@/components/app/application/subscriptions/list';
+import { SubscriptionDelete, SubscriptionList } from '@/components/app/application/subscriptions/list';
 import { ListPagination } from '@/components/business/list-pagination';
 import { ListToolbar } from '@/components/business/list-toolbar';
 import { PageHeader } from '@/components/business/page-header';
@@ -14,6 +14,7 @@ import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { useSubscriptionForm } from '@/hooks/use-subscription-form';
 import { useSubscriptionList } from '@/hooks/use-subscription-list';
+import { SUBSCRIPTION_TAG_GROUP } from '@/lib/constants/tags';
 
 function EditDrawer({ id, copyFromId, onSaved, ...props }: SubscriptionDrawerProps) {
   const [open, setOpen] = useState(false);
@@ -106,9 +107,12 @@ export default function Page() {
           searchPlaceholder={t('admin.application.subscriptions.searchPlaceholder')}
           search={params.search ?? ''}
           status={params.status ?? 'all'}
+          tagGroup={SUBSCRIPTION_TAG_GROUP}
+          tagId={params.tagId}
           loading={loading}
           onSearch={(search) => changeParams({ search, page: 1 })}
           onStatusChange={(status) => changeParams({ status, page: 1 })}
+          onTagChange={(tagId) => changeParams({ tagId, page: 1 })}
           onRefresh={refresh}
           refreshDisabled={loading || removing}
           actions={
@@ -132,13 +136,15 @@ export default function Page() {
             </AlertAction>
           </Alert>
         ) : (
-          <SubscriptionTable
+          <SubscriptionList
             drawer={EditDrawer}
             onRemove={deleteItem}
             items={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={Boolean(snapshot?.params.search) || (snapshot?.params.status ?? 'all') !== 'all'}
+            filtered={
+              Boolean(snapshot?.params.search || snapshot?.params.tagId) || (snapshot?.params.status ?? 'all') !== 'all'
+            }
             onUpdated={refresh}
             statusActions={statusActions}
             selectedIds={selectedIds}

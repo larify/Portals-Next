@@ -11,11 +11,15 @@ import type { TagDetail, TagFormChange, TagInput, TagListParams, TagOption } fro
 export const COLOR_PRESETS = {
   white: '#ffffff',
   gray: '#a5a5a5',
+  sky: '#38bdf8',
+  blue: '#3d85c6',
   lime: '#c4f042',
-  blue: '#369eff',
   green: '#2dc653',
+  emerald: '#10b981',
+  yellow: '#fde047',
   amber: '#f59e0b',
   orange: '#f97316',
+  pink: '#ec4899',
   rose: '#e11d48',
   purple: '#9333ea',
 } as const;

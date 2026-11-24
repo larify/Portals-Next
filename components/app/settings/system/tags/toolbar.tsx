@@ -1,10 +1,9 @@
 'use client';
 
-import { RefreshCw, Search } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { ListSearch } from '@/components/business/list-search';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TAG_GROUPS } from '@/lib/constants/tags';
@@ -36,8 +35,6 @@ export function TagToolbar({
 }: TagToolbarProps) {
   const t = useTranslations();
 
-  const [searchInput, setSearchInput] = useState(search);
-
   const groups = [
     { value: 'all', label: t('admin.settings.system.tags.allGroups') },
     ...TAG_GROUPS.map((group) => ({ value: group.value, label: t(group.label) })),
@@ -45,31 +42,12 @@ export function TagToolbar({
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <form
-        className="flex flex-col gap-3 sm:flex-row"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSearch(searchInput.trim());
-        }}
-      >
-        <div className="relative w-full sm:w-80">
-          <Input
-            className="pr-10"
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder={t('admin.settings.system.tags.searchPlaceholder')}
-            aria-label={t('admin.settings.system.tags.searchPlaceholder')}
-          />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon-sm"
-            className="absolute top-1/2 right-0.5 -translate-y-1/2"
-            aria-label={t('shared.search')}
-          >
-            <Search />
-          </Button>
-        </div>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <ListSearch
+          search={search}
+          placeholder={t('admin.settings.system.tags.searchPlaceholder')}
+          onSearch={onSearch}
+        />
         <Select
           value={group}
           items={groups}
@@ -90,7 +68,7 @@ export function TagToolbar({
             ))}
           </SelectContent>
         </Select>
-      </form>
+      </div>
       <div className="flex items-center gap-2">
         {selectedCount > 0 && (
           <TagDeleteConfirmation

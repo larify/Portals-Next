@@ -6,7 +6,7 @@ import { subscriptions } from '@/lib/db/schema';
 import type { Pagination } from '@/lib/types/pagination';
 import type { SubscriptionListParams } from '@/lib/types/subscriptions';
 import type { TagOption } from '@/lib/types/tag';
-import { attachTags, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
+import { attachTags, filterByTag, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
 
 export type SubscriptionRow = typeof subscriptions.$inferSelect;
 export type SubscriptionValues = Omit<typeof subscriptions.$inferInsert, 'id' | 'createdAt' | 'updatedAt'> & {
@@ -18,6 +18,7 @@ export function pagination({
   size,
   search,
   status,
+  tagId,
 }: SubscriptionListParams): Pagination<SubscriptionRow & { tags: TagOption[] }> {
   const where = and(
     search
@@ -27,6 +28,7 @@ export function pagination({
         )
       : undefined,
     status && status !== 'all' ? eq(subscriptions.status, status === 'enabled') : undefined,
+    tagId ? filterByTag(subscriptions.id, SUBSCRIPTION_TAG_GROUP, tagId) : undefined,
   );
 
   return db.transaction((tx) => {

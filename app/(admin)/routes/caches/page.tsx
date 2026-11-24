@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CacheForm } from '@/components/app/routes/caches/form';
-import { CacheTable } from '@/components/app/routes/caches/table';
+import { CacheList } from '@/components/app/routes/caches/list';
 import { RouteDrawer } from '@/components/app/routes/route-drawer';
 import type { RouteDrawerProps } from '@/components/app/routes/route-drawer';
 import { RouteHeader } from '@/components/app/routes/route-header';
@@ -110,9 +110,11 @@ export default function Page() {
           mode="caches"
           search={params.search ?? ''}
           status={params.status ?? 'all'}
+          tagId={params.tagId}
           loading={loading}
           onSearch={(search) => changeParams({ search, page: 1 })}
           onStatusChange={(status) => changeParams({ status, page: 1 })}
+          onTagChange={(tagId) => changeParams({ tagId, page: 1 })}
           onRefresh={refresh}
           selectedCount={selectedIds.length}
           removing={removing}
@@ -129,12 +131,14 @@ export default function Page() {
             </AlertAction>
           </Alert>
         ) : (
-          <CacheTable
+          <CacheList
             drawer={EditDrawer}
             items={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={Boolean(snapshot?.params.search) || (snapshot?.params.status ?? 'all') !== 'all'}
+            filtered={
+              Boolean(snapshot?.params.search || snapshot?.params.tagId) || (snapshot?.params.status ?? 'all') !== 'all'
+            }
             onUpdated={refresh}
             onRemove={deleteRoute}
             statusActions={statusActions}

@@ -6,7 +6,7 @@ import { originals } from '@/lib/db/schema';
 import type { Pagination } from '@/lib/types/pagination';
 import type { OriginalListParams } from '@/lib/types/routes';
 import type { TagOption } from '@/lib/types/tag';
-import { attachTags, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
+import { attachTags, filterByTag, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
 
 export type OriginalRow = typeof originals.$inferSelect;
 export type OriginalValues = Omit<typeof originals.$inferInsert, 'id' | 'createdAt' | 'updatedAt'> & {
@@ -18,6 +18,7 @@ export function pagination({
   size,
   search,
   status,
+  tagId,
 }: OriginalListParams): Pagination<OriginalRow & { tags: TagOption[] }> {
   const where = and(
     search
@@ -28,6 +29,7 @@ export function pagination({
         )
       : undefined,
     status && status !== 'all' ? eq(originals.status, status === 'enabled') : undefined,
+    tagId ? filterByTag(originals.id, ROUTE_TYPE.ORIGINAL, tagId) : undefined,
   );
 
   return db.transaction((tx) => {

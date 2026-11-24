@@ -6,6 +6,7 @@ type SubscriptionRow = typeof subscriptions.$inferSelect;
 export interface SubscriptionListParams extends PaginationParams {
   search?: string;
   status?: 'all' | 'enabled' | 'disabled';
+  tagId?: string;
 }
 export type SubscriptionListItem = Pick<SubscriptionRow, 'id' | 'name' | 'description' | 'status' | 'pathname'> & {
   hasFlow: boolean;

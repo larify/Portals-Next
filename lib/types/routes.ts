@@ -7,6 +7,7 @@ export type RouteStatusFilter = 'all' | 'enabled' | 'disabled';
 export interface RouteListParams extends PaginationParams {
   search?: string;
   status?: RouteStatusFilter;
+  tagId?: string;
 }
 
 export interface HeaderRow {

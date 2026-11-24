@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { OriginalForm } from '@/components/app/routes/originals/form';
-import { OriginalTable } from '@/components/app/routes/originals/table';
+import { OriginalList } from '@/components/app/routes/originals/list';
 import { RouteDrawer } from '@/components/app/routes/route-drawer';
 import type { RouteDrawerProps } from '@/components/app/routes/route-drawer';
 import { RouteHeader } from '@/components/app/routes/route-header';
@@ -118,9 +118,11 @@ export default function Page() {
           mode="originals"
           search={params.search ?? ''}
           status={params.status ?? 'all'}
+          tagId={params.tagId}
           loading={loading}
           onSearch={(search) => changeParams({ search, page: 1 })}
           onStatusChange={(status) => changeParams({ status, page: 1 })}
+          onTagChange={(tagId) => changeParams({ tagId, page: 1 })}
           onRefresh={refresh}
           selectedCount={selectedIds.length}
           removing={removing}
@@ -137,12 +139,14 @@ export default function Page() {
             </AlertAction>
           </Alert>
         ) : (
-          <OriginalTable
+          <OriginalList
             drawer={EditDrawer}
             items={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={Boolean(snapshot?.params.search) || (snapshot?.params.status ?? 'all') !== 'all'}
+            filtered={
+              Boolean(snapshot?.params.search || snapshot?.params.tagId) || (snapshot?.params.status ?? 'all') !== 'all'
+            }
             onUpdated={refresh}
             onRemove={deleteRoute}
             statusActions={statusActions}

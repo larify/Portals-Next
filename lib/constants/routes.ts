@@ -1,3 +1,6 @@
+import { ArrowRightLeft, DatabaseZap, FileCodeCorner, Navigation, Rss } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
 export const ROUTE_TYPE = {
   PROXY: 'proxies',
   REDIRECT: 'redirects',
@@ -17,3 +20,11 @@ export const ROUTE_MODE_OPTIONS = [
   { label: 'admin.sidebar.caches', value: ROUTE_TYPE.CACHE },
   { label: 'admin.sidebar.originals', value: ROUTE_TYPE.ORIGINAL },
 ] as const;
+
+export const ROUTE_ICONS = {
+  proxies: ArrowRightLeft,
+  redirects: Navigation,
+  caches: DatabaseZap,
+  originals: FileCodeCorner,
+  subscriptions: Rss,
+} satisfies Record<RouteType, LucideIcon>;

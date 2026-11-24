@@ -61,7 +61,7 @@ const crud = createService(
 export function list(input: unknown) {
   const params = v.record(input);
 
-  if (Object.keys(params).some((key) => !['page', 'size', 'search', 'status'].includes(key))) {
+  if (Object.keys(params).some((key) => !['page', 'size', 'search', 'status', 'tagId'].includes(key))) {
     throw appError('common.INVALID_PARAMS');
   }
 
@@ -69,6 +69,7 @@ export function list(input: unknown) {
     ...v.pagination(params),
     search: params.search === undefined ? '' : v.string(params.search, true).trim(),
     status: params.status === undefined ? 'all' : v.choice(params.status, ['all', 'enabled', 'disabled']),
+    tagId: params.tagId === undefined ? undefined : v.string(params.tagId).trim(),
   });
 
   return {

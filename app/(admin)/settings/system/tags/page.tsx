@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import type { TagDeleteResult } from '@/components/app/settings/system/tags/delete-confirmation';
 import { TagHeader } from '@/components/app/settings/system/tags/header';
-import { TagPagination } from '@/components/app/settings/system/tags/pagination';
-import { TagTable } from '@/components/app/settings/system/tags/table';
+import { TagList } from '@/components/app/settings/system/tags/list';
 import { TagToolbar } from '@/components/app/settings/system/tags/toolbar';
+import { ListPagination } from '@/components/business/list-pagination';
 import { Button } from '@/components/ui/button';
 import { useTagList } from '@/hooks/use-tag';
 import type { TagDetail } from '@/lib/types/tag';
@@ -95,7 +95,7 @@ export default function Page() {
             </Button>
           </div>
         ) : (
-          <TagTable
+          <TagList
             tags={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
@@ -109,14 +109,13 @@ export default function Page() {
             onDelete={deleteTag}
           />
         )}
-        {snapshot && snapshot.result.total > 0 && (
-          <TagPagination
+        {snapshot && (
+          <ListPagination
             total={snapshot.result.total}
             page={snapshot.result.page}
             size={snapshot.result.size}
             disabled={actionsDisabled}
-            onPageChange={(page) => changeParams({ page })}
-            onSizeChange={(size) => changeParams({ size, page: 1 })}
+            onChange={changeParams}
           />
         )}
       </div>

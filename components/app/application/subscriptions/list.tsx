@@ -4,12 +4,10 @@ import { Ban, CircleCheck, CircleSlash, LoaderCircle, Play, Trash2, Workflow } f
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import type { ComponentType, ReactElement, ReactNode } from 'react';
+import type { ComponentType, ReactElement } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
-import { PathnameLink } from '@/components/business/pathname-link';
-import { TagList } from '@/components/business/tag-list';
+import { RouteRecordList } from '@/components/business/record-list';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -19,9 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { usePreferences } from '@/hooks/use-preferences';
 import type { SubscriptionListItem, SubscriptionStatusActions } from '@/lib/types/subscriptions';
 
 export interface SubscriptionDrawerProps {
@@ -33,7 +29,7 @@ export interface SubscriptionDrawerProps {
   triggerLabel?: string;
 }
 
-export function SubscriptionTable({
+export function SubscriptionList({
   drawer: Drawer,
   items,
   loading,
@@ -62,116 +58,74 @@ export function SubscriptionTable({
 }) {
   const t = useTranslations();
 
-  const formatDateTime = usePreferences((state) => state.formatDateTime);
-
   return (
-    <SubscriptionTableContainer loading={loading} initialLoading={initialLoading}>
-      <TableHeader className="bg-muted/50">
-        <TableRow>
-          <TableHead className="w-12 max-w-12 min-w-12 px-4">
-            <Checkbox
-              aria-label={t('shared.selectAll')}
-              checked={items.length > 0 && items.every((subscription) => selectedIds.includes(subscription.id))}
-              indeterminate={selectedIds.length > 0 && selectedIds.length < items.length}
-              disabled={actionsDisabled || items.length === 0}
-              onCheckedChange={onSelectAll}
+    <RouteRecordList
+      items={items}
+      shortcutType="subscription"
+      pathnameLabel={t('admin.application.subscriptions.columns.pathname')}
+      loading={loading}
+      initialLoading={initialLoading}
+      loadingLabel={t('admin.application.subscriptions.loading')}
+      emptyLabel={t(
+        filtered ? 'admin.application.subscriptions.emptyFiltered' : 'admin.application.subscriptions.empty',
+      )}
+      selectedIds={selectedIds}
+      onSelect={onSelect}
+      onSelectAll={onSelectAll}
+      actionsDisabled={actionsDisabled}
+      renderItem={(subscription) => ({
+        title: (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="block h-auto max-w-full cursor-pointer truncate p-0 text-left font-medium hover:no-underline"
+                  disabled={actionsDisabled}
+                  nativeButton={false}
+                  render={<Link href={`/application/subscriptions/workflow/${encodeURIComponent(subscription.id)}`} />}
+                />
+              }
+            >
+              {subscription.name}
+            </TooltipTrigger>
+            <TooltipContent side="top" className="break-words whitespace-pre-wrap">
+              {subscription.description || subscription.name}
+            </TooltipContent>
+          </Tooltip>
+        ),
+        status: (
+          <SubscriptionStatus
+            enabled={subscription.status}
+            label={t(subscription.status ? 'shared.enabled' : 'shared.disabled')}
+          />
+        ),
+        actions: (
+          <ListActions disabled={actionsDisabled}>
+            <Drawer id={subscription.id} onSaved={onUpdated} disabled={actionsDisabled} />
+            <ListActionTrigger
+              disabled={actionsDisabled}
+              href={`/application/subscriptions/workflow/${encodeURIComponent(subscription.id)}`}
+              label={t('admin.application.subscriptions.configure')}
+            >
+              <Workflow />
+            </ListActionTrigger>
+            <Drawer copyFromId={subscription.id} onSaved={onUpdated} disabled={actionsDisabled} />
+            <SubscriptionStatusAction
+              subscription={subscription}
+              statusActions={statusActions}
+              disabled={actionsDisabled}
             />
-          </TableHead>
-          <TableHead className="w-44">{t('shared.name')}</TableHead>
-          <TableHead className="min-w-48">{t('admin.application.subscriptions.columns.pathname')}</TableHead>
-          <TableHead>{t('shared.tags')}</TableHead>
-          <TableHead className="w-24 text-center">{t('shared.status')}</TableHead>
-          <TableHead className="w-44">{t('shared.updatedAt')}</TableHead>
-          <TableHead className="w-24 max-w-24 min-w-24 text-center">{t('shared.actions')}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {items.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={7} className="h-24 text-center">
-              <p role="status" className="font-medium">
-                {t(
-                  filtered ? 'admin.application.subscriptions.emptyFiltered' : 'admin.application.subscriptions.empty',
-                )}
-              </p>
-            </TableCell>
-          </TableRow>
-        ) : null}
-        {items.map((subscription) => (
-          <TableRow key={subscription.id}>
-            <TableCell className="w-12 max-w-12 min-w-12 px-4">
-              <Checkbox
-                aria-label={t('shared.selectRow', { name: subscription.name })}
-                checked={selectedIds.includes(subscription.id)}
-                disabled={actionsDisabled}
-                onCheckedChange={(checked) => onSelect(subscription.id, checked)}
-              />
-            </TableCell>
-            <TableCell>
-              <Tooltip disabled={!subscription.description}>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="cursor-pointer px-0 font-medium hover:no-underline"
-                      disabled={actionsDisabled}
-                      nativeButton={false}
-                      render={
-                        <Link href={`/application/subscriptions/workflow/${encodeURIComponent(subscription.id)}`} />
-                      }
-                    />
-                  }
-                >
-                  {subscription.name}
-                </TooltipTrigger>
-                <TooltipContent side="top" className="break-words whitespace-pre-wrap">
-                  {subscription.description}
-                </TooltipContent>
-              </Tooltip>
-            </TableCell>
-            <TableCell>
-              <PathnameLink pathname={subscription.pathname} shortcutType="subscription" id={subscription.id} />
-            </TableCell>
-            <TableCell>
-              <TagList tags={subscription.tags} />
-            </TableCell>
-            <TableCell className="text-center">
-              <SubscriptionStatus
-                enabled={subscription.status}
-                label={t(subscription.status ? 'shared.enabled' : 'shared.disabled')}
-              />
-            </TableCell>
-            <TableCell className="text-muted-foreground text-sm tabular-nums">
-              {formatDateTime(subscription.updatedAt)}
-            </TableCell>
-            <TableCell className="w-24 max-w-24 min-w-24">
-              <ListActions disabled={actionsDisabled}>
-                <Drawer id={subscription.id} onSaved={onUpdated} disabled={actionsDisabled} />
-                <ListActionTrigger
-                  disabled={actionsDisabled}
-                  href={`/application/subscriptions/workflow/${encodeURIComponent(subscription.id)}`}
-                  label={t('admin.application.subscriptions.configure')}
-                >
-                  <Workflow />
-                </ListActionTrigger>
-                <Drawer copyFromId={subscription.id} onSaved={onUpdated} disabled={actionsDisabled} />
-                <SubscriptionStatusAction
-                  subscription={subscription}
-                  statusActions={statusActions}
-                  disabled={actionsDisabled}
-                />
-                <SubscriptionDelete
-                  disabled={actionsDisabled}
-                  name={subscription.name}
-                  onConfirm={() => onRemove(subscription.id)}
-                />
-              </ListActions>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </SubscriptionTableContainer>
+            <SubscriptionDelete
+              disabled={actionsDisabled}
+              name={subscription.name}
+              onConfirm={() => onRemove(subscription.id)}
+            />
+          </ListActions>
+        ),
+      })}
+    />
   );
 }
 
@@ -267,47 +221,6 @@ function SubscriptionStatusAction({
             </p>
           )}
         </>
-      )}
-    </div>
-  );
-}
-
-function SubscriptionTableContainer({
-  loading,
-  initialLoading,
-  children,
-}: {
-  loading: boolean;
-  initialLoading: boolean;
-  children: ReactNode;
-}) {
-  const t = useTranslations();
-  const namespace = 'admin.application.subscriptions';
-
-  return (
-    <div className="relative overflow-hidden rounded-md border">
-      {loading && !initialLoading && (
-        <div
-          role="progressbar"
-          aria-label={t(`${namespace}.loading`)}
-          className="bg-primary/10 pointer-events-none absolute inset-x-0 top-0 z-10 h-0.5 overflow-hidden"
-        >
-          <div className="bg-primary animate-loading-progress h-full w-[35%] motion-reduce:w-full motion-reduce:animate-none" />
-        </div>
-      )}
-      {initialLoading ? (
-        <div
-          role="status"
-          aria-busy={loading}
-          className="text-muted-foreground flex items-center justify-center gap-2 py-12 text-sm"
-        >
-          <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
-          {t(`${namespace}.loading`)}
-        </div>
-      ) : (
-        <Table className="min-w-275" aria-busy={loading}>
-          {children}
-        </Table>
       )}
     </div>
   );

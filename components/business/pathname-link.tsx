@@ -58,10 +58,10 @@ export function PathnameLink({
 
   const analyticsLabel = t('admin.analytics.title');
   const copyLabel = t(copied ? 'shared.copySuccess' : 'shared.copyPath');
-  const actionClassName = `${ACTION_CLASS_NAME} ${copied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'}`;
+  const actionClassName = `${ACTION_CLASS_NAME} ${copied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100'}`;
 
   return (
-    <div className="group inline-flex w-fit items-center gap-1.5">
+    <div className="group flex w-fit max-w-full items-center gap-1.5">
       <TooltipProvider delay={500} timeout={0}>
         <Tooltip>
           <TooltipTrigger
@@ -70,7 +70,7 @@ export function PathnameLink({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary focus-visible:ring-ring inline-flex h-8 items-center rounded-sm text-sm font-medium no-underline outline-none hover:no-underline focus-visible:ring-2"
+                className="text-primary focus-visible:ring-ring min-w-0 truncate rounded-sm text-sm font-medium no-underline outline-none hover:no-underline focus-visible:ring-2"
               />
             }
           >
@@ -81,7 +81,7 @@ export function PathnameLink({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <span className="inline-flex items-center gap-0.5">
+      <span className="inline-flex shrink-0 items-center gap-0.5">
         <Button
           variant="ghost"
           size="icon-xs"

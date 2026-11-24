@@ -6,7 +6,7 @@ import { caches } from '@/lib/db/schema';
 import type { Pagination } from '@/lib/types/pagination';
 import type { CacheListParams } from '@/lib/types/routes';
 import type { TagOption } from '@/lib/types/tag';
-import { attachTags, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
+import { attachTags, filterByTag, findTagIds as findConfiguredTagIds, replaceTags } from './tag-configs';
 
 export type CacheRow = typeof caches.$inferSelect;
 export type CacheValues = Omit<typeof caches.$inferInsert, 'id' | 'createdAt' | 'updatedAt' | 'cachedAt'> & {
@@ -18,6 +18,7 @@ export function pagination({
   size,
   search,
   status,
+  tagId,
 }: CacheListParams): Pagination<CacheRow & { tags: TagOption[] }> {
   const where = and(
     search
@@ -28,6 +29,7 @@ export function pagination({
         )
       : undefined,
     status && status !== 'all' ? eq(caches.status, status === 'enabled') : undefined,
+    tagId ? filterByTag(caches.id, ROUTE_TYPE.CACHE, tagId) : undefined,
   );
 
   return db.transaction((tx) => {

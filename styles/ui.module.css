@@ -19,7 +19,10 @@
   border-color: color-mix(in oklab, currentColor 30%, transparent);
 }
 
-:where(body) [data-slot='combobox-item'][data-highlighted] [data-slot='badge'] :where(*) {
+:where(body)
+  :is([data-slot='combobox-item'][data-highlighted], [data-slot='select-item']:focus)
+  [data-slot='badge']
+  :where(*) {
   color: inherit;
 }
 

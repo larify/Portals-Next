@@ -32,6 +32,7 @@ export function TagForm({
         <Input
           id={`${id}-label`}
           required
+          maxLength={10}
           value={form.label}
           onChange={(event) => onChange('label', event.target.value)}
         />

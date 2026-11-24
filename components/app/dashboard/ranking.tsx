@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ANALYTICS_LIMITS, ANALYTICS_ROUTE_TYPES } from '@/lib/constants/analytics';
-import { ROUTE_ICONS } from '@/lib/constants/route-icons';
+import { ROUTE_ICONS } from '@/lib/constants/routes';
 import type { AnalyticsLimit, AnalyticsRanking, AnalyticsRankingItem } from '@/lib/types/analytics';
 import type { DashboardCategory, DashboardQuery } from '@/lib/types/dashboard';
 import { QueryFeedback } from './query-feedback';

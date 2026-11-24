@@ -21,7 +21,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { ROUTE_ICONS } from '@/lib/constants/route-icons';
+import { ROUTE_ICONS } from '@/lib/constants/routes';
 
 const NAVIGATION_GROUPS = [
   {
