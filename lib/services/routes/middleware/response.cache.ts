@@ -43,6 +43,14 @@ export function cleanupMeta(input: Headers, body: Uint8Array | null, cors: Confi
     }
   }
 
+  if (/(?:^|,)\s*(?:private|no-store)(?:\s|=|,|$)/i.test(headers.get('cache-control') ?? '')) {
+    headers.delete('cache-control');
+  }
+
+  if ((headers.get('vary') ?? '').split(',').some((name) => name.trim() === '*')) {
+    headers.delete('vary');
+  }
+
   if (body && !headers.has('content-encoding') && isUtf8(body)) {
     setUtf8Charset(headers);
   }

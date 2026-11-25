@@ -230,13 +230,7 @@ class CacheConsumer implements CacheRouteConsumer {
     }
 
     const response = await proxyConsumer.request(context.outbound);
-    const headers = response.headers;
-    const cacheable =
-      response.ok &&
-      response.status !== 206 &&
-      !headers.has('set-cookie') &&
-      !/(?:^|,)\s*(?:private|no-store)(?:\s|=|,|$)/i.test(headers.get('cache-control') ?? '') &&
-      !(headers.get('vary') ?? '').split(',').some((name) => name.trim() === '*');
+    const cacheable = response.ok && response.status !== 206;
     const snapshot = await this.snapshot(response, context.config.cors);
     const current = repository.findById(context.config.id);
 
