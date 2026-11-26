@@ -1,6 +1,11 @@
 import { CONFIG_TYPES } from '../../../shared';
+import type { ConfigDeclaration } from '../../../types';
 import { appendValue, bind, defineConfig, namedOnly, objectValue, options, positional } from '../../shared/config';
 import { BUILTIN_REFERENCES } from '../shared';
+
+export function getConfigGroupTags(declarations: readonly ConfigDeclaration[] = []): string[] {
+  return declarations.flatMap((entry) => (entry.type === CONFIG_TYPES.PROXY_GROUP ? [entry.value.name] : []));
+}
 
 export const config = defineConfig(
   'singbox',
@@ -11,7 +16,7 @@ export const config = defineConfig(
 
       bind(fields, 'type', declaration.value.kind);
       bind(fields, 'tag', name);
-      fields.outbounds = positional(declaration.value);
+      fields.outbounds = [...new Set(positional(declaration.value))];
       appendValue(output.value, 'outbounds', fields);
 
       return;

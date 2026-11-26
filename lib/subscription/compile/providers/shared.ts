@@ -34,6 +34,12 @@ type NodeModuleDefinition = Pick<NodeModule, 'type' | 'schema' | 'serialize'> & 
   prepare?: (source: NodeSource) => NodeSource;
   validate?: (source: Readonly<NodeSource>) => boolean;
 };
+type NodeValue = { definition: NodeDefinition; value: Source };
+type NodeCompile<Context> = (
+  nodes?: ProxyNode[],
+  options?: Record<string, unknown>,
+  context?: Context,
+) => CompiledNode[];
 
 function setProperty(target: Source, key: string, value: unknown): void {
   Object.defineProperty(target, key, { value, enumerable: true, configurable: true, writable: true });
@@ -144,40 +150,36 @@ function resolve(
 function transformNode(
   node: ProxyNode,
   provider: NodeModuleDefinition,
-  context: CompileOptions = {},
-): { definition: NodeDefinition; source: NodeSource; value: Source } | undefined {
+  context: CompileOptions,
+): NodeValue | undefined {
   const resolved = resolve(node, provider, context);
 
-  return resolved ? { ...resolved, value: transform(resolved.source, resolved.definition.schema) } : undefined;
+  return resolved
+    ? { definition: resolved.definition, value: transform(resolved.source, resolved.definition.schema) }
+    : undefined;
 }
 
-export function defineNodes(definition: NodeModuleDefinition): NodeModule {
+export function defineNodes<Context = never>(
+  definition: NodeModuleDefinition & {
+    prepareValues?: (entries: readonly NodeValue[], context?: Context) => readonly NodeValue[];
+  },
+): Omit<NodeModule, 'compileNodes'> & { compileNodes: NodeCompile<Context> } {
   return {
     ...definition,
-    compileNodes(nodes, options) {
-      const compiled: CompiledNode[] = [];
+    compileNodes(nodes, options, context) {
+      const entries = (nodes ?? []).flatMap((node, index) => {
+        const entry = transformNode(node, definition, { index, options });
 
-      nodes?.forEach((node, index) => {
-        const resolved = transformNode(node, definition, { index, options });
-
-        if (!resolved) {
-          return;
-        }
-
-        const { value } = resolved;
-
-        const output = definition.serialize(value, resolved.definition);
-
-        if (output) {
-          compiled.push({
-            target: definition.type,
-            value,
-            ...output,
-          });
-        }
+        return entry ? [entry] : [];
       });
 
-      return compiled;
+      return (definition.prepareValues?.(entries, context) ?? entries).flatMap(
+        ({ value, definition: nodeDefinition }) => {
+          const output = definition.serialize(value, nodeDefinition);
+
+          return output ? [{ target: definition.type, value, ...output }] : [];
+        },
+      );
     },
   };
 }

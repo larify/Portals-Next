@@ -1,0 +1,111 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "timestamp": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": false
+    },
+    "clash_api": {
+      "default_mode": "rule",
+      "external_controller": "0.0.0.0:9090",
+      "external_ui": "ui",
+      "external_ui_download_detour": "direct",
+      "external_ui_download_url": "https://github.com/MetaCubeX/yacd/archive/gh-pages.zip"
+    }
+  },
+  "dns": {
+    "servers": [
+      {
+        "detour": "手动选择",
+        "tag": "google-dns",
+        "type": "https",
+        "server": "8.8.8.8"
+      },
+      {
+        "detour": "手动选择",
+        "tag": "cloudflare-dns",
+        "type": "https",
+        "server": "1.1.1.1"
+      },
+      {
+        "tag": "dnspod-dns",
+        "type": "udp",
+        "server": "119.29.29.29"
+      },
+      {
+        "tag": "aliyun-dns",
+        "type": "udp",
+        "server": "223.5.5.5"
+      }
+    ],
+    "rules": [
+      {
+        "action": "route",
+        "rule_set": ["geosite-cn"],
+        "server": "dnspod-dns"
+      },
+      {
+        "action": "route",
+        "rule_set": ["personal-proxy", "personal-specify-proxy", "geosite-!cn"],
+        "server": "google-dns"
+      }
+    ],
+    "final": "google-dns",
+    "strategy": "ipv4_only"
+  },
+  "inbounds": [
+    {
+      "type": "direct",
+      "tag": "dns-in",
+      "listen": "::",
+      "listen_port": 53,
+      "network": "udp"
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "::",
+      "listen_port": 7890
+    },
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": ["172.19.0.0/30"],
+      "mtu": 9000,
+      "dns_mode": "hijack",
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 7890
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "type": "direct"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "dnspod-dns"
+    },
+    "default_http_client": "rules-via-proxy"
+  },
+  "http_clients": [
+    {
+      "tag": "rules-via-proxy",
+      "detour": "手动选择"
+    }
+  ]
+}
