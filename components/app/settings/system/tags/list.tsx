@@ -2,6 +2,7 @@
 
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
 import { RecordList } from '@/components/business/record-list';
 import { TagBadge } from '@/components/business/tag-badge';
@@ -17,7 +18,7 @@ export function TagList({
   tags,
   loading,
   initialLoading,
-  filtered,
+  emptyAction,
   onUpdated,
   selectedIds,
   onSelect,
@@ -29,7 +30,7 @@ export function TagList({
   tags: readonly TagDetail[];
   loading: boolean;
   initialLoading: boolean;
-  filtered: boolean;
+  emptyAction: ReactNode;
   onUpdated: () => void;
   selectedIds: readonly string[];
   onSelect: (id: string, checked: boolean) => void;
@@ -67,7 +68,7 @@ export function TagList({
       loading={loading}
       initialLoading={initialLoading}
       loadingLabel={t('admin.settings.system.tags.shared.loading')}
-      emptyLabel={t(filtered ? 'admin.settings.system.tags.shared.empty' : 'admin.settings.system.tags.empty')}
+      emptyAction={emptyAction}
       selectedIds={selectedIds}
       onSelect={onSelect}
       onSelectAll={onSelectAll}

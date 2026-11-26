@@ -9,6 +9,7 @@ import { RouteDrawer } from '@/components/app/routes/route-drawer';
 import type { RouteDrawerProps } from '@/components/app/routes/route-drawer';
 import { RouteHeader } from '@/components/app/routes/route-header';
 import { RouteToolbar } from '@/components/app/routes/route-toolbar';
+import { ListCreateAction } from '@/components/business/list-actions';
 import { ListPagination } from '@/components/business/list-pagination';
 import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -62,6 +63,7 @@ export default function Page() {
   const loading = state.status === 'loading';
   const snapshot = state.snapshot;
   const actionsDisabled = loading || removing || snapshot?.params !== params;
+  const createDrawerProps = { disabled: loading || removing, onSaved: () => changeParams({ page: 1 }) };
 
   useEffect(() => {
     if (state.status === 'error' && state.snapshot) {
@@ -107,11 +109,7 @@ export default function Page() {
   return (
     <section className="mx-auto w-full max-w-375 lg:p-2" aria-labelledby="originals-title">
       <RouteHeader mode="originals">
-        <EditDrawer
-          disabled={loading || removing}
-          onSaved={() => changeParams({ page: 1 })}
-          triggerLabel={t('shared.new')}
-        />
+        <EditDrawer {...createDrawerProps} triggerLabel={t('shared.new')} />
       </RouteHeader>
       <div className="flex flex-col gap-4">
         <RouteToolbar
@@ -141,12 +139,10 @@ export default function Page() {
         ) : (
           <OriginalList
             drawer={EditDrawer}
+            emptyAction={<ListCreateAction {...createDrawerProps} drawer={EditDrawer} label={t('shared.new')} />}
             items={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={
-              Boolean(snapshot?.params.search || snapshot?.params.tagId) || (snapshot?.params.status ?? 'all') !== 'all'
-            }
             onUpdated={refresh}
             onRemove={deleteRoute}
             statusActions={statusActions}

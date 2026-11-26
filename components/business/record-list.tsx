@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Item } from '@/components/ui/item';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePreferences } from '@/hooks/use-preferences';
@@ -44,7 +45,7 @@ interface RecordListProps<Item> {
   loading: boolean;
   initialLoading: boolean;
   loadingLabel: string;
-  emptyLabel: string;
+  emptyAction: ReactNode;
   selectedIds: readonly string[];
   onSelect: (id: string, checked: boolean) => void;
   onSelectAll: (checked: boolean) => void;
@@ -61,7 +62,7 @@ export function RecordList<Item extends RecordListItem>({
   loading,
   initialLoading,
   loadingLabel,
-  emptyLabel,
+  emptyAction,
   selectedIds,
   onSelect,
   onSelectAll,
@@ -110,9 +111,16 @@ export function RecordList<Item extends RecordListItem>({
       )}
       <div aria-busy={loading}>
         {items.length === 0 ? (
-          <p role="status" className="text-muted-foreground py-8 text-center text-sm">
-            {emptyLabel}
-          </p>
+          <Item
+            variant="muted"
+            size="sm"
+            className="flex min-h-17.5 flex-row flex-nowrap items-center justify-center gap-2 rounded-lg"
+          >
+            <span role="status" className="text-muted-foreground min-w-0 text-center leading-5">
+              {t('shared.noData')}
+            </span>
+            {emptyAction}
+          </Item>
         ) : (
           <>
             <div className="mb-2 flex min-h-8 items-center gap-2 px-3 @4xl:grid @4xl:grid-cols-(--record-list-columns) @4xl:gap-x-3">

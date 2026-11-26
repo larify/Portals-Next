@@ -1,10 +1,10 @@
 'use client';
 
-import { Ellipsis } from 'lucide-react';
+import { Ellipsis, SquarePlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Children, createContext, useContext, useState } from 'react';
-import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
+import type { ButtonHTMLAttributes, ComponentType, ReactElement, ReactNode, Ref } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,8 +14,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ActionMenuContext = createContext<{ container: HTMLDivElement | null } | null>(null);
+
+export function ListCreateAction({
+  drawer: Drawer,
+  label,
+  disabled,
+  onSaved,
+}: {
+  drawer: ComponentType<{
+    disabled: boolean;
+    onSaved: () => void;
+    trigger: ReactElement;
+    triggerLabel: string;
+  }>;
+  label: string;
+  disabled: boolean;
+  onSaved: () => void;
+}) {
+  return (
+    <Tooltip>
+      <Drawer
+        disabled={disabled}
+        onSaved={onSaved}
+        trigger={
+          <TooltipTrigger
+            render={(props) => (
+              <ListActionTrigger {...props} disabled={disabled} label={label}>
+                <SquarePlus aria-hidden="true" className="size-5" />
+              </ListActionTrigger>
+            )}
+          />
+        }
+        triggerLabel=""
+      />
+      <TooltipContent side="top">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function ListActions({ children, disabled }: { children: ReactNode; disabled: boolean }) {
   const t = useTranslations();

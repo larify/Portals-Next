@@ -4,7 +4,7 @@ import { Ban, CircleCheck, CircleSlash, LoaderCircle, Play, Trash2, Workflow } f
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import type { ComponentType, ReactElement } from 'react';
+import type { ComponentType, ReactElement, ReactNode } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
 import { RouteRecordList } from '@/components/business/record-list';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export function SubscriptionList({
   items,
   loading,
   initialLoading,
-  filtered,
+  emptyAction,
   onUpdated,
   onRemove,
   statusActions,
@@ -47,7 +47,7 @@ export function SubscriptionList({
   items: readonly SubscriptionListItem[];
   loading: boolean;
   initialLoading: boolean;
-  filtered: boolean;
+  emptyAction: ReactNode;
   onUpdated: () => void;
   onRemove: (id: string) => Promise<void>;
   statusActions: SubscriptionStatusActions;
@@ -66,9 +66,7 @@ export function SubscriptionList({
       loading={loading}
       initialLoading={initialLoading}
       loadingLabel={t('admin.application.subscriptions.loading')}
-      emptyLabel={t(
-        filtered ? 'admin.application.subscriptions.emptyFiltered' : 'admin.application.subscriptions.empty',
-      )}
+      emptyAction={emptyAction}
       selectedIds={selectedIds}
       onSelect={onSelect}
       onSelectAll={onSelectAll}

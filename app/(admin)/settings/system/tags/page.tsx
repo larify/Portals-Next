@@ -4,9 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import type { TagDeleteResult } from '@/components/app/settings/system/tags/delete-confirmation';
+import { TagDrawer } from '@/components/app/settings/system/tags/drawer';
 import { TagHeader } from '@/components/app/settings/system/tags/header';
 import { TagList } from '@/components/app/settings/system/tags/list';
 import { TagToolbar } from '@/components/app/settings/system/tags/toolbar';
+import { ListCreateAction } from '@/components/business/list-actions';
 import { ListPagination } from '@/components/business/list-pagination';
 import { Button } from '@/components/ui/button';
 import { useTagList } from '@/hooks/use-tag';
@@ -20,6 +22,7 @@ export default function Page() {
   const loading = state.status === 'loading';
   const snapshot = state.snapshot;
   const actionsDisabled = loading || removing || snapshot?.params !== params;
+  const createDrawerProps = { disabled: loading || removing, onSaved: () => changeParams({ page: 1 }) };
 
   useEffect(() => {
     if (state.status === 'error' && state.snapshot) {
@@ -68,7 +71,7 @@ export default function Page() {
 
   return (
     <section className="mx-auto w-full max-w-375 lg:p-2" aria-labelledby="system-tags-title">
-      <TagHeader disabled={loading || removing} onCreated={() => changeParams({ page: 1 })} />
+      <TagHeader disabled={createDrawerProps.disabled} onCreated={createDrawerProps.onSaved} />
       <div className="flex flex-col gap-4">
         <TagToolbar
           search={params.search ?? ''}
@@ -99,7 +102,13 @@ export default function Page() {
             tags={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={Boolean(snapshot?.params.search) || Boolean(snapshot?.params.group)}
+            emptyAction={
+              <ListCreateAction
+                {...createDrawerProps}
+                drawer={TagDrawer}
+                label={t('admin.settings.system.tags.create')}
+              />
+            }
             onUpdated={refresh}
             selectedIds={selectedIds}
             onSelect={select}

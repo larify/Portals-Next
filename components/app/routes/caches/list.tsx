@@ -1,7 +1,7 @@
 'use client';
 import { Ban, ExternalLink, LoaderCircle, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useState } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
 import { RouteRecordList } from '@/components/business/record-list';
@@ -29,7 +29,7 @@ export function CacheList({
   items,
   loading,
   initialLoading,
-  filtered,
+  emptyAction,
   onUpdated,
   onRemove,
   statusActions,
@@ -42,7 +42,7 @@ export function CacheList({
   items: readonly CacheListItem[];
   loading: boolean;
   initialLoading: boolean;
-  filtered: boolean;
+  emptyAction: ReactNode;
   onUpdated: () => void;
   onRemove: (id: string) => Promise<boolean>;
   statusActions: RouteStatusActions;
@@ -88,7 +88,7 @@ export function CacheList({
       loading={loading}
       initialLoading={initialLoading}
       loadingLabel={t('admin.routes.caches.loading')}
-      emptyLabel={t(filtered ? 'admin.routes.caches.emptyFiltered' : 'admin.routes.caches.empty')}
+      emptyAction={emptyAction}
       selectedIds={selectedIds}
       onSelect={onSelect}
       onSelectAll={onSelectAll}

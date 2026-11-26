@@ -1,7 +1,7 @@
 'use client';
 import { Ban, LoaderCircle, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useState } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
 import { RouteRecordList } from '@/components/business/record-list';
@@ -28,7 +28,7 @@ export function OriginalList({
   items,
   loading,
   initialLoading,
-  filtered,
+  emptyAction,
   onUpdated,
   onRemove,
   statusActions,
@@ -41,7 +41,7 @@ export function OriginalList({
   items: readonly OriginalListItem[];
   loading: boolean;
   initialLoading: boolean;
-  filtered: boolean;
+  emptyAction: ReactNode;
   onUpdated: () => void;
   onRemove: (id: string) => Promise<boolean>;
   statusActions: RouteStatusActions;
@@ -71,7 +71,7 @@ export function OriginalList({
       loading={loading}
       initialLoading={initialLoading}
       loadingLabel={t('admin.routes.originals.loading')}
-      emptyLabel={t(filtered ? 'admin.routes.originals.emptyFiltered' : 'admin.routes.originals.empty')}
+      emptyAction={emptyAction}
       selectedIds={selectedIds}
       onSelect={onSelect}
       onSelectAll={onSelectAll}

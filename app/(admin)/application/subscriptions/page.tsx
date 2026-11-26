@@ -7,6 +7,7 @@ import { SubscriptionForm } from '@/components/app/application/subscription-form
 import { SubscriptionDrawer } from '@/components/app/application/subscriptions/drawer';
 import type { SubscriptionDrawerProps } from '@/components/app/application/subscriptions/list';
 import { SubscriptionDelete, SubscriptionList } from '@/components/app/application/subscriptions/list';
+import { ListCreateAction } from '@/components/business/list-actions';
 import { ListPagination } from '@/components/business/list-pagination';
 import { ListToolbar } from '@/components/business/list-toolbar';
 import { PageHeader } from '@/components/business/page-header';
@@ -53,6 +54,7 @@ export default function Page() {
   const loading = state.status === 'loading';
   const snapshot = state.snapshot;
   const actionsDisabled = loading || removing || snapshot?.params !== params;
+  const createDrawerProps = { disabled: loading || removing, onSaved: () => changeParams({ page: 1 }) };
 
   useEffect(() => {
     if (state.status === 'error' && state.snapshot) {
@@ -96,11 +98,7 @@ export default function Page() {
         title={t('admin.application.subscriptions.title')}
         description={t('admin.application.subscriptions.description')}
       >
-        <EditDrawer
-          disabled={loading || removing}
-          onSaved={() => changeParams({ page: 1 })}
-          triggerLabel={t('shared.new')}
-        />
+        <EditDrawer {...createDrawerProps} triggerLabel={t('shared.new')} />
       </PageHeader>
       <div className="flex flex-col gap-4">
         <ListToolbar
@@ -138,13 +136,11 @@ export default function Page() {
         ) : (
           <SubscriptionList
             drawer={EditDrawer}
+            emptyAction={<ListCreateAction {...createDrawerProps} drawer={EditDrawer} label={t('shared.new')} />}
             onRemove={deleteItem}
             items={snapshot?.result.data ?? []}
             loading={loading}
             initialLoading={loading && !snapshot}
-            filtered={
-              Boolean(snapshot?.params.search || snapshot?.params.tagId) || (snapshot?.params.status ?? 'all') !== 'all'
-            }
             onUpdated={refresh}
             statusActions={statusActions}
             selectedIds={selectedIds}

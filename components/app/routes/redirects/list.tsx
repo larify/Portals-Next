@@ -1,7 +1,7 @@
 'use client';
 import { Ban, ExternalLink, LoaderCircle, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useState } from 'react';
 import { ListActions, ListActionTrigger } from '@/components/business/list-actions';
 import { RouteRecordList } from '@/components/business/record-list';
@@ -29,7 +29,7 @@ export function RedirectList({
   items,
   loading,
   initialLoading,
-  filtered,
+  emptyAction,
   onUpdated,
   statusActions,
   onRemove,
@@ -42,7 +42,7 @@ export function RedirectList({
   items: readonly RedirectListItem[];
   loading: boolean;
   initialLoading: boolean;
-  filtered: boolean;
+  emptyAction: ReactNode;
   onUpdated: () => void;
   statusActions: RouteStatusActions;
   onRemove: (id: string) => Promise<boolean>;
@@ -88,7 +88,7 @@ export function RedirectList({
       loading={loading}
       initialLoading={initialLoading}
       loadingLabel={t('admin.routes.redirects.loading')}
-      emptyLabel={t(filtered ? 'admin.routes.redirects.emptyFiltered' : 'admin.routes.redirects.empty')}
+      emptyAction={emptyAction}
       selectedIds={selectedIds}
       onSelect={onSelect}
       onSelectAll={onSelectAll}
