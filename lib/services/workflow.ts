@@ -57,7 +57,7 @@ export function draft(raw: unknown): { id: string } {
 
   validateArrangement(toWorkflow(snapshot), (type) => nodeRegistry.getNode(type).manifest, nodeRegistry.types);
 
-  if (!repository.update(id, { flowDraft: serializeSnapshot(snapshot) })) {
+  if (!repository.updateDraft(id, serializeSnapshot(snapshot))) {
     throw appError('subscriptions.NOT_FOUND');
   }
 

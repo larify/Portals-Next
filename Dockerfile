@@ -16,26 +16,21 @@ RUN mkdir -p public \
        BETTER_AUTH_URL=http://localhost:3000 \
        BETTER_AUTH_SECRET="$(node -p 'require("node:crypto").randomBytes(32).toString("hex")')" pnpm build
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:24-bookworm-slim AS app
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN mkdir -p /app/data && chown node:node /app/data
-
-FROM runtime AS migrate
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY drizzle.config.ts ./
-COPY drizzle ./drizzle
-COPY lib/db ./lib/db
-USER node
-CMD ["node", "node_modules/drizzle-kit/bin.cjs", "migrate"]
-
-FROM runtime AS app
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
+ENV DATABASE_URL=/app/data/portals.db
+
+RUN mkdir -p /app/data && chown node:node /app/data
+COPY --chown=node:node drizzle ./drizzle
+
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
+
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

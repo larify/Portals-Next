@@ -47,13 +47,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        include:
-          - target: app
-            prefix: ''
-          - target: migrate
-            prefix: migrate-
     steps:
       - uses: actions/checkout@v6
         with:
@@ -90,14 +83,14 @@ jobs:
             name=${{ vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME }}/portals-next,enable=${{ steps.dockerhub.outcome == 'success' }}
           flavor: latest=false
           tags: |
-            type=raw,value=${{ matrix.prefix }}${{ needs.version.outputs.tag }}
-            type=raw,value=${{ matrix.prefix }}latest,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ needs.version.outputs.tag }}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: Build image
         uses: docker/build-push-action@v7
         with:
           context: .
-          target: ${{ matrix.target }}
+          target: app
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.metadata.outputs.tags }}

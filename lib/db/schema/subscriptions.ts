@@ -18,10 +18,7 @@ export const subscriptions = sqliteTable(
     token: text('token'),
     expiredAt: integer('expired_at', { mode: 'timestamp_ms' }),
     createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now),
-    updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
-      .notNull()
-      .default(now)
-      .$onUpdate(() => new Date()),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(now),
   },
   (table) => [uniqueIndex('subscriptions_pathname_unique').on(table.pathname)],
 );

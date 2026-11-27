@@ -4,7 +4,7 @@
 
 按[访问地址](#访问地址)设置 `BETTER_AUTH_URL`，用 `openssl rand -base64 32` 生成 `BETTER_AUTH_SECRET`，并替换启动示例中的密钥占位值。使用 Docker Compose 时，将 [`.env.example`](../.env.example) 复制为 `.env` 并填写配置。以下启动示例为缓存路由配置了 `REDIS_URL`。
 
-以下示例将宿主机的 `./data` 挂载到容器的 `/app/data`。使用默认 `DATABASE_URL` 时，请准备已初始化的 `./data/portals.db`，并确保容器用户可写入数据库及其所在目录。
+以下示例将宿主机的 `./data` 挂载到容器的 `/app/data`。应用在 `instrumentation.ts` 的 Node.js 启动阶段通过 Drizzle ORM 执行迁移，完成后再初始化应用配置、处理请求；迁移失败时中止启动。默认数据库为 `/app/data/portals.db`；自定义 `DATABASE_URL` 应使用容器内的绝对路径。请确保容器用户可写入数据库及其所在目录，无需预先初始化数据库。
 
 ### 访问地址
 
@@ -101,15 +101,15 @@ docker compose up -d
 
 ## GitHub Actions
 
-流水线为 `linux/amd64` 和 `linux/arm64` 构建应用与迁移镜像，默认发布到 `ghcr.io/<owner>/<repo>`。
+流水线为 `linux/amd64` 和 `linux/arm64` 构建包含迁移能力的应用镜像，默认发布到 `ghcr.io/<owner>/<repo>`。
 
 配置 `DOCKERHUB_USERNAME`（变量或密钥）和 `DOCKERHUB_TOKEN`（密钥）后，同步发布到该账号的 `portals-next` 仓库。
 
-| 触发方式                       | 应用标签                   | 迁移标签                                   |
-| ------------------------------ | -------------------------- | ------------------------------------------ |
-| 推送到 `main`                  | `latest`、`年.月.运行编号` | `migrate-latest`、`migrate-年.月.运行编号` |
-| 推送到 `release`               | `unstable`                 | `migrate-unstable`                         |
-| 手动选择 Git ref               | `dev`                      | `migrate-dev`                              |
-| 向 `main` 或 `release` 提交 PR | 仅校验构建                 | 仅校验构建                                 |
+| 触发方式                       | 应用标签                   |
+| ------------------------------ | -------------------------- |
+| 推送到 `main`                  | `latest`、`年.月.运行编号` |
+| 推送到 `release`               | `unstable`                 |
+| 手动选择 Git ref               | `dev`                      |
+| 向 `main` 或 `release` 提交 PR | 仅校验构建                 |
 
-版本标签的年月取自提交时间（UTC）。`main` 的两种镜像均发布成功后，流水线创建对应版本的 GitHub Release。
+版本标签的年月取自提交时间（UTC）。`main` 的应用镜像发布成功后，流水线创建对应版本的 GitHub Release。

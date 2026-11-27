@@ -91,6 +91,10 @@ export function update(id: string, values: Partial<SubscriptionValues>): Subscri
   });
 }
 
+export function updateDraft(id: string, flowDraft: string): boolean {
+  return db.update(subscriptions).set({ flowDraft }).where(eq(subscriptions.id, id)).run().changes === 1;
+}
+
 export function findTagIds(id: string): string[] {
   return findConfiguredTagIds(SUBSCRIPTION_TAG_GROUP, id);
 }
@@ -107,6 +111,6 @@ export function remove(id: string): SubscriptionRow | undefined {
   });
 }
 
-const repository = { pagination, findById, findByPath, findTagIds, create, update, remove };
+const repository = { pagination, findById, findByPath, findTagIds, create, update, updateDraft, remove };
 
 export default repository;

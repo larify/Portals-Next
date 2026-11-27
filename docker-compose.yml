@@ -6,18 +6,8 @@ services:
     env_file:
       - .env
     depends_on:
-      migrate:
-        condition: service_completed_successfully
       redis:
         condition: service_healthy
-    volumes:
-      - portals-data:/app/data
-
-  migrate:
-    image: ghcr.io/larify/portals-next:migrate-latest
-    restart: 'no'
-    env_file:
-      - .env
     volumes:
       - portals-data:/app/data
 
@@ -27,7 +17,7 @@ services:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 3
 
 volumes:
   portals-data:
