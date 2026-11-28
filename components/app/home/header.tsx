@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogIn } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { LanguageControl, ThemeControl } from '@/components/app/settings/system/preferences-controls';
@@ -39,8 +39,8 @@ export async function HomeHeader({ user }: HomeHeaderProps) {
             <UserMenu compact initialImage={user.image} />
           </>
         ) : (
-          <Link href="/sign-in" className={buttonVariants({ size: 'icon-sm' })} aria-label={t('auth.signIn.submit')}>
-            <LogIn aria-hidden="true" />
+          <Link href="/sign-in" className={buttonVariants({ size: 'sm', className: 'ml-2' })}>
+            {t('auth.signIn.submit')}
           </Link>
         )}
       </nav>

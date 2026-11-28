@@ -91,7 +91,7 @@
     "groups": {
       "dashboards": "仪表盘",
       "routes": "路由",
-      "application": "应用设置",
+      "application": "应用",
       "settings": "系统设置"
     },
     "sidebar": {
